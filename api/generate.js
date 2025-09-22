@@ -12,19 +12,21 @@ export default async function handler(req, res) {
  const prompt = `
 Crie ${numberOfPosts} variações de post para ${platform} sobre: "${idea}". Em ${language}. Use linguagem criativa e envolvente.
 
-Para cada variação, siga esta estrutura EXATA:
+⚠️ IMPORTANTE: SIGA EXATAMENTE A ESTRUTURA ABAIXO. NÃO USE TÍTULOS COMO "Post 1", "Post 2", etc.  
+NÃO USE MARCADORES COMO "**Imagem:**", "**Legenda:**".  
+CADA VARIAÇÃO DEVE TER APENAS OS QUATRO ITENS LISTADOS ABAIXO, EM ORDEM:
 
-📌 **Legenda para o Post**
-[Escreva uma legenda curta, inspiradora, com emojis e hashtags relevantes]
+1. 📌 **Legenda para o Post**  
+   [Escreva uma legenda curta, inspiradora, com emojis e hashtags relevantes]
 
-🖼️ **Prompt para Imagem**
-[Descreva uma cena detalhada para gerar uma imagem com IA. Inclua estilo, luz, objetos, personagens, emoção e detalhes visuais.]
+2. 🖼️ **Prompt para Imagem**  
+   [Descreva uma cena detalhada para gerar uma imagem com IA. Inclua estilo, luz, objetos, personagens, emoção e detalhes visuais.]
 
-🔖 **Hashtags Estratégicas**
-[Lista de 5-7 hashtags relevantes, separadas por espaço]
+3. 📌 **Hashtags Estratégicas**  
+   [Lista de 5-7 hashtags relevantes, separadas por espaço]
 
-⏰ **Melhor Horário para Postar**
-[Hora ideal para publicar, com justificativa curta]
+4. ⏰ **Melhor Horário para Postar**  
+   [Hora ideal para publicar, com justificativa curta]
 
 Seja criativo, mas mantenha a estrutura acima. Evite repetições e use linguagem natural.
 `;
