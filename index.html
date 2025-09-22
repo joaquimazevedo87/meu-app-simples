@@ -307,7 +307,7 @@
       `;
 
       try {
-        // Chamada à API do Gemini
+        // Chamada à API do Gemini via endpoint do Vercel
         const response = await fetch('/api/generate', {
           method: 'POST',
           headers: {
