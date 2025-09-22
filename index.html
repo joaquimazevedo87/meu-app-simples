@@ -165,6 +165,46 @@
       font-size: 2rem;
       margin-bottom: 10px;
     }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .post-item {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: left;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .copy-btn:hover {
+      background: #218838;
+    }
   </style>
 </head>
 <body>
@@ -221,9 +261,9 @@
 
     <div class="form-group">
       <label for="numberOfPosts">5. Quantas variações você quer?</label>
-      <input type="number" id="numberOfPosts" class="input-field" min="1" max="5" value="1">
+      <input type="number" id="numberOfPosts" class="input-field" min="1" max="3" value="1">
       <p style="color: #888; font-size: 0.8rem; margin-top: 5px;">
-        Gere de 1 a 5 variações de post de uma só vez.
+        Gere de 1 a 3 variações de post de uma só vez.
       </p>
     </div>
 
@@ -247,7 +287,7 @@
       event.target.classList.add('active');
     }
 
-    function generateContent() {
+    async function generateContent() {
       const idea = document.getElementById('idea').value.trim();
       const platform = document.getElementById('platform').value;
       const language = document.getElementById('language').value;
@@ -258,20 +298,83 @@
         return;
       }
 
-      // Simular gerar conteúdo
       const resultArea = document.querySelector('.result-area');
       resultArea.innerHTML = `
-        <div style="text-align: left; padding: 20px; background: #1e1e1e; border-radius: 8px; margin: 20px 0;">
-          <h3 style="color: #fff; margin-bottom: 15px;">Conteúdo Gerado:</h3>
-          <div style="color: #ccc; line-height: 1.6;">
-            <p><strong>Plataforma:</strong> ${platform}</p>
-            <p><strong>Idioma:</strong> ${language}</p>
-            <p><strong>Ideia:</strong> "${idea}"</p>
-            <p><strong>Número de variações:</strong> ${numberOfPosts}</p>
-            <p style="margin-top: 20px;"><em>Conteúdo será gerado aqui quando conectado à IA.</em></p>
-          </div>
+        <div style="text-align: center; padding: 40px;">
+          <div class="loading"></div>
+          <p style="color: #ccc; margin-top: 15px;">Gerando conteúdo com IA...</p>
         </div>
       `;
+
+      try {
+        // Chamada à API do Gemini
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idea,
+            platform,
+            language,
+            numberOfPosts
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Erro ao gerar conteúdo');
+        }
+
+        // Dividir em posts
+        const posts = data.content.split('\n\n').filter(p => p.trim());
+
+        let postsHTML = '';
+        posts.forEach((post, index) => {
+          if (post.trim()) {
+            postsHTML += `
+              <div class="post-item">
+                <button class="copy-btn" onclick="copyToClipboard(this)">📋 Copiar</button>
+                <h4>Post ${index + 1}</h4>
+                <pre style="white-space: pre-wrap; color: #ccc; margin-top: 10px;">${post}</pre>
+              </div>
+            `;
+          }
+        });
+
+        resultArea.innerHTML = `
+          <h3 style="color: #fff; text-align: left; margin-bottom: 20px;">Conteúdo Gerado:</h3>
+          ${postsHTML}
+          <p style="color: #888; font-size: 0.9rem; margin-top: 20px;">
+            Conteúdo gerado com Gemini AI • ${new Date().toLocaleString()}
+          </p>
+        `;
+
+      } catch (error) {
+        console.error(error);
+        resultArea.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #ff6b6b;">
+            <div>❌</div>
+            <p>Erro ao gerar conteúdo: ${error.message}</p>
+            <p>Verifique sua chave de API e tente novamente.</p>
+          </div>
+        `;
+      }
+    }
+
+    function copyToClipboard(button) {
+      const postDiv = button.parentElement;
+      const text = postDiv.querySelector('pre').textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        button.textContent = '✔ Copiado!';
+        setTimeout(() => {
+          button.textContent = '📋 Copiar';
+        }, 2000);
+      }).catch(err => {
+        alert('Erro ao copiar: ' + err);
+      });
     }
   </script>
 </body>
