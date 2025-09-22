@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Conteúdo Simples</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    textarea, input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #007bff; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    #result { margin-top: 30px; padding: 20px; background: #e9ecef; border-radius: 5px; white-space: pre-wrap; }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Gerador de Conteúdo (Versão Simples)</h1>
+    <p>Este app gera ideias de conteúdo para redes sociais. Sem complicações.</p>
+
+    <label><strong>Plataforma:</strong></label>
+    <select id="platform">
+      <option>Instagram</option>
+      <option>Facebook</option>
+      <option>Twitter</option>
+      <option>LinkedIn</option>
+      <option>TikTok</option>
+    </select>
+
+    <label><strong>Temas ou Ideia:</strong></label>
+    <textarea id="idea" placeholder="Ex: Promoção de verão, dicas de produtividade..." rows="4"></textarea>
+
+    <button onclick="generateContent()">Gerar Conteúdo</button>
+
+    <div id="error" class="error"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function generateContent() {
+      const platform = document.getElementById('platform').value;
+      const idea = document.getElementById('idea').value.trim();
+
+      const resultDiv = document.getElementById('result');
+      const errorDiv = document.getElementById('error');
+
+      if (!idea) {
+        errorDiv.textContent = "❌ Por favor, insira uma ideia!";
+        resultDiv.textContent = "";
+        return;
+      }
+
+      errorDiv.textContent = "";
+      
+      // Gera texto fake (sem API, sem erro)
+      const prompts = {
+        'Instagram': `📸 Post Instagram sobre "${idea}"\n\nLegenda: ${idea}! 💥 Não perca essa oportunidade! 🌟\n\n#marketing #instagram #dicas`,
+        'Facebook': `📢 Post Facebook sobre "${idea}"\n\nOlá! Hoje vamos falar sobre ${idea}. Compartilhe com seus amigos! 👍\n\n#facebook #conteudo`,
+        'Twitter': `🐦 Tweet sobre "${idea}"\n\n${idea}! Saiba mais 👇 #twitter #trends`,
+        'LinkedIn': `💼 Post LinkedIn sobre "${idea}"\n\nProfissionais, hoje o tema é: ${idea}. O que acham? Deixem nos comentários! 👇 #linkedin #carreira`,
+        'TikTok': `🎥 Legenda TikTok: ${idea} 😍🔥 Corre que tá bombando! #tiktok #viral`
+      };
+
+      resultDiv.textContent = prompts[platform] || `Conteúdo para ${platform}: ${idea}`;
+    }
+  </script>
+</body>
+</html>
