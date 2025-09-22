@@ -285,26 +285,76 @@
     function setMode(mode) {
       document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
+    async function generateContent() {
+  const idea = document.getElementById('idea').value.trim();
+  const platform = document.getElementById('platform').value;
+  const language = document.getElementById('language').value;
+  const numberOfPosts = parseInt(document.getElementById('numberOfPosts').value) || 1;
+
+  if (!idea) {
+    alert('Por favor, insira uma ideia ou tema!');
+    return;
+  }
+
+  const resultArea = document.querySelector('.result-area');
+  resultArea.innerHTML = `
+    <div style="text-align: center; padding: 40px;">
+      <div class="loading"></div>
+      <p style="color: #ccc; margin-top: 15px;">Gerando conteúdo com IA...</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idea,
+        platform,
+        language,
+        numberOfPosts
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Erro ao gerar conteúdo');
     }
 
-    async function generateContent() {
-      const idea = document.getElementById('idea').value.trim();
-      const platform = document.getElementById('platform').value;
-      const language = document.getElementById('language').value;
-      const numberOfPosts = parseInt(document.getElementById('numberOfPosts').value) || 1;
+    const variations = data.content.split('\n\n').filter(p => p.trim());
 
-      if (!idea) {
-        alert('Por favor, insira uma ideia ou tema!');
-        return;
-      }
-
-      const resultArea = document.querySelector('.result-area');
-      resultArea.innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-          <div class="loading"></div>
-          <p style="color: #ccc; margin-top: 15px;">Gerando conteúdo com IA...</p>
+    let postsHTML = '';
+    variations.forEach((variation, index) => {
+      postsHTML += `
+        <div class="post-item">
+          <button class="copy-btn" onclick="copyToClipboard(this)">📋 Copiar</button>
+          <h4>Variação ${index + 1}</h4>
+          <pre style="white-space: pre-wrap; color: #ccc; margin-top: 10px;">${variation}</pre>
         </div>
       `;
+    });
+
+    resultArea.innerHTML = `
+      <h3 style="color: #fff; text-align: left; margin-bottom: 20px;">Conteúdo Gerado:</h3>
+      ${postsHTML}
+      <p style="color: #888; font-size: 0.9rem; margin-top: 20px;">
+        Conteúdo gerado com Gemini AI • ${new Date().toLocaleString()}
+      </p>
+    `;
+  } catch (error) {
+    console.error(error);
+    resultArea.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #ff6b6b;">
+        <div>❌</div>
+        <p>Erro ao gerar conteúdo: ${error.message}</p>
+        <p>Verifique sua chave de API e tente novamente.</p>
+      </div>
+    `;
+  }
+}
 
       try {
         // Chamada à API do Gemini via endpoint do Vercel
@@ -379,3 +429,4 @@
   </script>
 </body>
 </html>
+
